@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <QtCharts/qcategoryaxis.h>
 #include <QtCharts/QColorAxis>
@@ -173,7 +147,7 @@ void VerticalAxis::updateGeometry()
         //label text wrapping
         QString text;
         if (axis()->isReverse() && axis()->type() != QAbstractAxis::AxisTypeCategory)
-            text = labelList.at(labelList.count() - i - 1);
+            text = labelList.at(labelList.size() - i - 1);
         else
             text = labelList.at(i);
 
@@ -184,7 +158,7 @@ void VerticalAxis::updateGeometry()
         } else {
             QString displayText = text;
             if (axis()->truncateLabels()) {
-                qreal labelHeight = (axisRect.height() / layout.count()) - (2 * labelPadding());
+                qreal labelHeight = (axisRect.height() / layout.size()) - (2 * labelPadding());
                 // Replace digits with ellipsis "..." if number does not fit
                 displayText =
                         ChartPresenter::truncatedText(axis()->labelsFont(), text, axis()->labelsAngle(),
@@ -533,7 +507,7 @@ void VerticalAxis::updateMinorTickGeometry()
             minorArrowLineItem->setVisible(minorGridLineVisible);
         }
     } else {
-        if (minorTickCount < 1 || tickSpacing == 0.0 || minorTickSpacings.count() != minorTickCount)
+        if (minorTickCount < 1 || tickSpacing == 0.0 || minorTickSpacings.size() != minorTickCount)
             return;
 
         for (int i = 0; i < layout.size() - 1; ++i) {

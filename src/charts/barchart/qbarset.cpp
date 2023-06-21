@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <QtCharts/QBarSet>
 #include <private/qbarset_p.h>
@@ -369,8 +343,8 @@ QString QBarSet::label() const
 void QBarSet::append(const qreal value)
 {
     // Convert to QPointF
-    int index = d_ptr->m_values.count();
-    d_ptr->append(QPointF(d_ptr->m_values.count(), value));
+    int index = d_ptr->m_values.size();
+    d_ptr->append(QPointF(d_ptr->m_values.size(), value));
     emit valuesAdded(index, 1);
 }
 
@@ -381,9 +355,9 @@ void QBarSet::append(const qreal value)
 */
 void QBarSet::append(const QList<qreal> &values)
 {
-    int index = d_ptr->m_values.count();
+    int index = d_ptr->m_values.size();
     d_ptr->append(values);
-    emit valuesAdded(index, values.count());
+    emit valuesAdded(index, values.size());
 }
 
 /*!
@@ -412,7 +386,7 @@ void QBarSet::insert(const int index, const qreal value)
     if (!d_ptr->m_selectedBars.isEmpty()) {
         // if value was inserted we need to move already selected bars by 1
         QSet<int> selectedAfterInsert;
-        for (const auto &value : qAsConst(d_ptr->m_selectedBars)) {
+        for (const auto &value : std::as_const(d_ptr->m_selectedBars)) {
             if (value >= index) {
                 selectedAfterInsert << value + 1;
                 callSignal = true;
@@ -460,7 +434,7 @@ void QBarSet::remove(const int index, const int count)
 */
 void QBarSet::replace(const int index, const qreal value)
 {
-    if (index >= 0 && index < d_ptr->m_values.count()) {
+    if (index >= 0 && index < d_ptr->m_values.size()) {
         d_ptr->replace(index, value);
         emit valueChanged(index);
     }
@@ -478,7 +452,7 @@ void QBarSet::replace(const int index, const qreal value)
 */
 qreal QBarSet::at(const int index) const
 {
-    if (index < 0 || index >= d_ptr->m_values.count())
+    if (index < 0 || index >= d_ptr->m_values.size())
         return 0;
     return d_ptr->m_values.at(index).y();
 }
@@ -497,7 +471,7 @@ qreal QBarSet::operator [](const int index) const
 */
 int QBarSet::count() const
 {
-    return d_ptr->m_values.count();
+    return d_ptr->m_values.size();
 }
 
 /*!
@@ -506,7 +480,7 @@ int QBarSet::count() const
 qreal QBarSet::sum() const
 {
     qreal total(0);
-    for (int i = 0; i < d_ptr->m_values.count(); i++)
+    for (int i = 0; i < d_ptr->m_values.size(); i++)
         total += d_ptr->m_values.at(i).y();
     return total;
 }
@@ -762,7 +736,7 @@ void QBarSet::setBarSelected(int index, bool selected)
 void QBarSet::selectAllBars()
 {
     bool callSignal = false;
-    for (int i = 0; i < d_ptr->m_values.count(); ++i)
+    for (int i = 0; i < d_ptr->m_values.size(); ++i)
         d_ptr->setBarSelected(i, true, callSignal);
 
     if (callSignal)
@@ -778,7 +752,7 @@ void QBarSet::selectAllBars()
 void QBarSet::deselectAllBars()
 {
     bool callSignal = false;
-    for (int i = 0; i < d_ptr->m_values.count(); ++i)
+    for (int i = 0; i < d_ptr->m_values.size(); ++i)
         d_ptr->setBarSelected(i, false, callSignal);
 
     if (callSignal)
@@ -869,7 +843,7 @@ void QBarSetPrivate::append(QPointF value)
 
 void QBarSetPrivate::append(const QList<QPointF> &values)
 {
-    int originalIndex = m_values.count();
+    int originalIndex = m_values.size();
     for (const auto &value : values) {
         if (isValidValue(value))
             m_values.append(value);
@@ -879,7 +853,7 @@ void QBarSetPrivate::append(const QList<QPointF> &values)
 
 void QBarSetPrivate::append(const QList<qreal> &values)
 {
-    int originalIndex = m_values.count();
+    int originalIndex = m_values.size();
     int index = originalIndex;
     for (const auto value : values) {
         if (isValidValue(value)) {
@@ -906,10 +880,10 @@ int QBarSetPrivate::remove(const int index, const int count)
 {
     int removeCount = count;
 
-    if ((index < 0) || (m_values.count() == 0))
+    if ((index < 0) || (m_values.size() == 0))
         return 0; // Invalid index or not values in list, remove nothing.
-    else if ((index + count) > m_values.count())
-        removeCount = m_values.count() - index; // Trying to remove more items than list has. Limit amount to be removed.
+    else if ((index + count) > m_values.size())
+        removeCount = m_values.size() - index; // Trying to remove more items than list has. Limit amount to be removed.
 
     int c = 0;
     while (c < removeCount) {
@@ -921,7 +895,7 @@ int QBarSetPrivate::remove(const int index, const int count)
     if (!m_selectedBars.empty()) {
         QSet<int> selectedAfterRemoving;
 
-        for (const int &selectedBarIndex : qAsConst(m_selectedBars)) {
+        for (const int &selectedBarIndex : std::as_const(m_selectedBars)) {
             if (selectedBarIndex < index) {
                 selectedAfterRemoving << selectedBarIndex;
             } else if (selectedBarIndex >= index + removeCount) {
@@ -950,21 +924,21 @@ void QBarSetPrivate::replace(const int index, const qreal value)
 
 qreal QBarSetPrivate::pos(const int index)
 {
-    if (index < 0 || index >= m_values.count())
+    if (index < 0 || index >= m_values.size())
         return 0;
     return m_values.at(index).x();
 }
 
 qreal QBarSetPrivate::value(const int index)
 {
-    if (index < 0 || index >= m_values.count())
+    if (index < 0 || index >= m_values.size())
         return 0;
     return m_values.at(index).y();
 }
 
 void QBarSetPrivate::setBarSelected(int index, bool selected, bool &callSignal)
 {
-    if (index < 0 || index > m_values.count() - 1)
+    if (index < 0 || index > m_values.size() - 1)
         return;
 
     if (selected) {

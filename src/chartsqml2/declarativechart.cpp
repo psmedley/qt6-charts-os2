@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2017 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2017 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include "declarativechart_p.h"
 #include <QtGui/QPainter>
@@ -1044,7 +1018,7 @@ QString DeclarativeChart::title()
 QAbstractAxis *DeclarativeChart::axisX(QAbstractSeries *series)
 {
     QList<QAbstractAxis *> axes = m_chart->axes(Qt::Horizontal, series);
-    if (axes.count())
+    if (axes.size())
         return axes[0];
     return 0;
 }
@@ -1052,7 +1026,7 @@ QAbstractAxis *DeclarativeChart::axisX(QAbstractSeries *series)
 QAbstractAxis *DeclarativeChart::axisY(QAbstractSeries *series)
 {
     QList<QAbstractAxis *> axes = m_chart->axes(Qt::Vertical, series);
-    if (axes.count())
+    if (axes.size())
         return axes[0];
     return 0;
 }
@@ -1150,7 +1124,7 @@ QLocale DeclarativeChart::locale() const
 
 int DeclarativeChart::count()
 {
-    return m_chart->series().count();
+    return m_chart->series().size();
 }
 
 void DeclarativeChart::setDropShadowEnabled(bool enabled)
@@ -1251,7 +1225,7 @@ qsizetype DeclarativeChart::axesCountFunc(QQmlListProperty<QAbstractAxis> *list)
 {
     if (qobject_cast<DeclarativeChart *>(list->object)) {
         DeclarativeChart *chart = qobject_cast<DeclarativeChart *>(list->object);
-        return chart->m_chart->axes(Qt::Horizontal | Qt::Vertical).count();
+        return chart->m_chart->axes(Qt::Horizontal | Qt::Vertical).size();
     }
     return 0;
 }
@@ -1275,7 +1249,7 @@ void DeclarativeChart::axesClearFunc(QQmlListProperty<QAbstractAxis> *list)
 
 QAbstractSeries *DeclarativeChart::series(int index)
 {
-    if (index < m_chart->series().count()) {
+    if (index < m_chart->series().size()) {
         return m_chart->series().at(index);
     }
     return 0;

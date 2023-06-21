@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <private/axisanimation_p.h>
 #include <private/chartaxiselement_p.h>
@@ -70,42 +44,42 @@ void AxisAnimation::setValues(QList<qreal> &oldLayout, const QList<qreal> &newLa
     switch (m_type) {
     case ZoomOutAnimation: {
         QRectF rect = m_axis->gridGeometry();
-        oldLayout.resize(newLayout.count());
+        oldLayout.resize(newLayout.size());
 
-        for (int i = 0, j = oldLayout.count() - 1; i < (oldLayout.count() + 1) / 2; ++i, --j) {
+        for (int i = 0, j = oldLayout.size() - 1; i < (oldLayout.size() + 1) / 2; ++i, --j) {
             oldLayout[i] = m_axis->axis()->orientation() == Qt::Horizontal ? rect.left() : rect.bottom();
             oldLayout[j] = m_axis->axis()->orientation() == Qt::Horizontal ? rect.right() : rect.top();
         }
     }
     break;
     case ZoomInAnimation: {
-        int index = qMin(oldLayout.count() * (m_axis->axis()->orientation() == Qt::Horizontal ? m_point.x() : (1 - m_point.y())), newLayout.count() - (qreal)1.0);
-        oldLayout.resize(newLayout.count());
+        int index = qMin(oldLayout.size() * (m_axis->axis()->orientation() == Qt::Horizontal ? m_point.x() : (1 - m_point.y())), newLayout.size() - (qreal)1.0);
+        oldLayout.resize(newLayout.size());
 
         if (index < 0)
             break;
-        for (int i = 0; i < oldLayout.count(); i++)
+        for (int i = 0; i < oldLayout.size(); i++)
             oldLayout[i] = oldLayout[index];
     }
     break;
     case MoveForwardAnimation: {
-        oldLayout.resize(newLayout.count());
+        oldLayout.resize(newLayout.size());
 
-        for (int i = 0, j = i + 1; i < oldLayout.count() - 1; ++i, ++j)
+        for (int i = 0, j = i + 1; i < oldLayout.size() - 1; ++i, ++j)
             oldLayout[i] = oldLayout[j];
     }
     break;
     case MoveBackwordAnimation: {
-        oldLayout.resize(newLayout.count());
+        oldLayout.resize(newLayout.size());
 
-        for (int i = oldLayout.count() - 1, j = i - 1; i > 0; --i, --j)
+        for (int i = oldLayout.size() - 1, j = i - 1; i > 0; --i, --j)
             oldLayout[i] = oldLayout[j];
     }
     break;
     default: {
-        oldLayout.resize(newLayout.count());
+        oldLayout.resize(newLayout.size());
         QRectF rect = m_axis->gridGeometry();
-        for (int i = 0, j = oldLayout.count() - 1; i < oldLayout.count(); ++i, --j)
+        for (int i = 0, j = oldLayout.size() - 1; i < oldLayout.size(); ++i, --j)
             oldLayout[i] = m_axis->axis()->orientation() == Qt::Horizontal ? rect.left() : rect.top();
     }
     break;
@@ -123,9 +97,9 @@ QVariant AxisAnimation::interpolated(const QVariant &start, const QVariant &end,
     const auto endList = qvariant_cast<QList<qreal>>(end);
     QList<qreal> result;
 
-    Q_ASSERT(startList.count() == endList.count());
+    Q_ASSERT(startList.size() == endList.size());
 
-    for (int i = 0; i < startList.count(); i++) {
+    for (int i = 0; i < startList.size(); i++) {
         const qreal value = startList[i] + ((endList[i] - startList[i]) * progress);
         result << value;
     }

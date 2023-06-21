@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <QtCharts/QBoxPlotSeries>
 #include <private/qboxplotseries_p.h>
@@ -287,7 +261,7 @@ void QBoxPlotSeries::clear()
 int QBoxPlotSeries::count() const
 {
     Q_D(const QBoxPlotSeries);
-    return d->m_boxSets.count();
+    return d->m_boxSets.size();
 }
 
 /*!
@@ -406,7 +380,7 @@ void QBoxPlotSeriesPrivate::initializeDomain()
     qreal maxX(domain()->maxX());
     qreal maxY(domain()->maxY());
 
-    qreal x = m_boxSets.count();
+    qreal x = m_boxSets.size();
     minX = qMin(minX, qreal(-0.5));
     minY = qMin(minY, min());
     maxX = qMax(maxX, x - qreal(0.5));
@@ -445,7 +419,7 @@ void QBoxPlotSeriesPrivate::populateCategories(QBarCategoryAxis *axis)
 {
     QStringList categories;
     if (axis->categories().isEmpty()) {
-        for (int i(1); i < m_boxSets.count() + 1; i++) {
+        for (int i(1); i < m_boxSets.size() + 1; i++) {
             QBoxSet *set = m_boxSets.at(i - 1);
             if (set->label().isEmpty())
                 categories << presenter()->numberToString(i);
@@ -641,7 +615,7 @@ bool QBoxPlotSeriesPrivate::append(const QList<QBoxSet *> &sets)
 
 bool QBoxPlotSeriesPrivate::remove(const QList<QBoxSet *> &sets)
 {
-    if (sets.count() == 0)
+    if (sets.size() == 0)
         return false;
 
     for (auto *set : sets) {
@@ -686,7 +660,7 @@ QBoxSet *QBoxPlotSeriesPrivate::boxSetAt(int index)
 
 qreal QBoxPlotSeriesPrivate::min()
 {
-    if (m_boxSets.count() <= 0)
+    if (m_boxSets.size() <= 0)
         return 0;
 
     qreal min = m_boxSets.at(0)->at(0);
@@ -703,7 +677,7 @@ qreal QBoxPlotSeriesPrivate::min()
 
 qreal QBoxPlotSeriesPrivate::max()
 {
-    if (m_boxSets.count() <= 0)
+    if (m_boxSets.size() <= 0)
         return 0;
 
     qreal max = m_boxSets.at(0)->at(0);

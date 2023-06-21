@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2021 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2021 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <private/splinechartitem_p.h>
 #include <private/qsplineseries_p.h>
@@ -115,7 +89,7 @@ void SplineChartItem::updateChart(const QList<QPointF> &oldPoints, const QList<Q
                                   int index)
 {
     QList<QPointF> controlPoints;
-    if (newPoints.count() >= 2)
+    if (newPoints.size() >= 2)
         controlPoints = calculateControlPoints(newPoints);
 
     if (m_animation)
@@ -143,7 +117,7 @@ void SplineChartItem::updateGeometry()
         return;
     }
 
-    Q_ASSERT(points.count() * 2 - 2 == controlPoints.count());
+    Q_ASSERT(points.size() * 2 - 2 == controlPoints.size());
 
     QPainterPath splinePath;
     QPainterPath fullPath;
@@ -328,7 +302,7 @@ void SplineChartItem::updateGeometry()
         qreal markerHalfSize = (m_series->markerSize() / 2.0) + 1;
         qreal markerSize = m_series->markerSize() + 2;
 
-        for (const auto &point : qAsConst(points)) {
+        for (const auto &point : std::as_const(points)) {
             checkShapePath.addRect(point.x() - markerHalfSize,
                                    point.y() - markerHalfSize,
                                    markerSize, markerSize);
@@ -354,9 +328,9 @@ void SplineChartItem::updateGeometry()
 QList<QPointF> SplineChartItem::calculateControlPoints(const QList<QPointF> &points)
 {
     QList<QPointF> controlPoints;
-    controlPoints.resize(points.count() * 2 - 2);
+    controlPoints.resize(points.size() * 2 - 2);
 
-    int n = points.count() - 1;
+    int n = points.size() - 1;
 
     if (n == 1) {
         //for n==1
@@ -422,7 +396,7 @@ QList<qreal> SplineChartItem::firstControlPoints(const QList<qreal> &list)
 {
     QList<qreal> result;
 
-    int count = list.count();
+    int count = list.size();
     result.resize(count);
     result[0] = list[0] / 2.0;
 

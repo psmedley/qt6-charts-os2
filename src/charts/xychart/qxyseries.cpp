@@ -1,31 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2021 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Charts module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 or (at your option) any later version
-** approved by the KDE Free Qt Foundation. The licenses are as published by
-** the Free Software Foundation and appearing in the file LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2021 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <QtCharts/QXYSeries>
 #include <QtCharts/QColorAxis>
@@ -537,7 +511,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \fn void QXYSeries::lightMarkerChanged(const QImage &lightMarker)
     This signal is emitted when the light marker image changes to \a lightMarker.
-    \sa QXYSeries::setLightMarker();
+    \sa QXYSeries::setLightMarker()
     \since 6.2
 */
 
@@ -627,7 +601,7 @@ void QXYSeries::append(const QPointF &point)
 
     if (isValidValue(point)) {
         d->m_points << point;
-        emit pointAdded(d->m_points.count() - 1);
+        emit pointAdded(d->m_points.size() - 1);
     }
 }
 
@@ -1097,7 +1071,7 @@ void QXYSeries::selectAllPoints()
     Q_D(QXYSeries);
 
     bool callSignal = false;
-    for (int i = 0; i < d->m_points.count(); ++i)
+    for (int i = 0; i < d->m_points.size(); ++i)
         d->setPointSelected(i, true, callSignal);
 
     if (callSignal)
@@ -1115,7 +1089,7 @@ void QXYSeries::deselectAllPoints()
     Q_D(QXYSeries);
 
     bool callSignal = false;
-    for (int i = 0; i < d->m_points.count(); ++i)
+    for (int i = 0; i < d->m_points.size(); ++i)
         d->setPointSelected(i, false, callSignal);
 
     if (callSignal)
@@ -1244,7 +1218,7 @@ void QXYSeries::removePoints(int index, int count)
         if (!d->m_selectedPoints.empty()) {
             QSet<int> selectedAfterRemoving;
 
-            for (const int &selectedPointIndex : qAsConst(d->m_selectedPoints)) {
+            for (const int &selectedPointIndex : std::as_const(d->m_selectedPoints)) {
                 if (selectedPointIndex < index) {
                     selectedAfterRemoving << selectedPointIndex;
                 } else if (selectedPointIndex >= index + count) {
@@ -1281,7 +1255,7 @@ void QXYSeries::insert(int index, const QPointF &point)
         if (!d->m_selectedPoints.isEmpty()) {
             // if point was inserted we need to move already selected points by 1
             QSet<int> selectedAfterInsert;
-            for (const auto &value : qAsConst(d->m_selectedPoints)) {
+            for (const auto &value : std::as_const(d->m_selectedPoints)) {
                 if (value >= index) {
                     selectedAfterInsert << value + 1;
                     callSignal = true;
@@ -1348,7 +1322,7 @@ const QPointF &QXYSeries::at(int index) const
 int QXYSeries::count() const
 {
     Q_D(const QXYSeries);
-    return d->m_points.count();
+    return d->m_points.size();
 }
 
 
@@ -1769,7 +1743,7 @@ void QXYSeriesPrivate::initializeDomain()
         maxX = minX;
         maxY = minY;
 
-        for (int i = 0; i < points.count(); i++) {
+        for (int i = 0; i < points.size(); i++) {
             qreal x = points[i].x();
             qreal y = points[i].y();
             minX = qMin(minX, x);
@@ -1907,13 +1881,18 @@ void QXYSeriesPrivate::drawBestFitLine(QPainter *painter, const QRectF &clipRect
     if (!ok)
         return;
 
-    const qreal x1 = clipRect.x();
-    const qreal y1 = bestFitLineParams.first * x1 + bestFitLineParams.second;
-    QPointF p1 = domain()->calculateGeometryPoint(QPointF(x1, y1), ok);
+    auto *domain = this->domain();
+    const auto clipOriginX = domain->isReverseX() ? clipRect.right() : clipRect.left();
+    const auto clipOriginY = domain->isReverseY() ? clipRect.top() : clipRect.bottom();
+    const auto domainOrigin = domain->calculateDomainPoint({clipOriginX, clipOriginY});
 
-    const qreal x2 = clipRect.x() + 1;
+    const qreal x1 = domainOrigin.x();
+    const qreal y1 = bestFitLineParams.first * x1 + bestFitLineParams.second;
+    QPointF p1 = domain->calculateGeometryPoint(QPointF(x1, y1), ok);
+
+    const qreal x2 = domainOrigin.x() + 1;
     const qreal y2 = bestFitLineParams.first * x2 + bestFitLineParams.second;
-    QPointF p2 = domain()->calculateGeometryPoint(QPointF(x2, y2), ok);
+    QPointF p2 = domain->calculateGeometryPoint(QPointF(x2, y2), ok);
 
     if (ok) {
         QLineF bestFitLine { p1, p2 };
@@ -1944,7 +1923,7 @@ QColor QXYSeries::bestFitLineColor() const
 
 QPair<qreal, qreal> QXYSeriesPrivate::bestFitLineEquation(bool &ok) const
 {
-    if (m_points.count() <= 1) {
+    if (m_points.size() <= 1) {
         ok = false;
         return { 0, 0 };
     }
@@ -1958,14 +1937,14 @@ QPair<qreal, qreal> QXYSeriesPrivate::bestFitLineEquation(bool &ok) const
         xySum += point.x() * point.y();
     }
 
-    const qreal divisor = m_points.count() * x2Sum - xSum * xSum;
+    const qreal divisor = m_points.size() * x2Sum - xSum * xSum;
     // To prevent crashes in unusual cases
     if (divisor == 0.0) {
         ok = false;
         return { 0, 0 };
     }
 
-    qreal a = (m_points.count() * xySum - xSum * ySum) / divisor;
+    qreal a = (m_points.size() * xySum - xSum * ySum) / divisor;
     qreal b = (x2Sum * ySum - xSum * xySum) / divisor;
 
     return { a, b };
@@ -1973,7 +1952,7 @@ QPair<qreal, qreal> QXYSeriesPrivate::bestFitLineEquation(bool &ok) const
 
 void QXYSeriesPrivate::setPointSelected(int index, bool selected, bool &callSignal)
 {
-    if (index < 0 || index > m_points.count() - 1)
+    if (index < 0 || index > m_points.size() - 1)
         return;
 
     if (selected) {
