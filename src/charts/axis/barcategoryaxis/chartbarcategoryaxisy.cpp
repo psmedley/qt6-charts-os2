@@ -40,7 +40,7 @@ ChartBarCategoryAxisY::ChartBarCategoryAxisY(QBarCategoryAxis *axis, QGraphicsIt
     : VerticalAxis(axis, item, true),
       m_categoriesAxis(axis)
 {
-    QObject::connect( m_categoriesAxis,SIGNAL(categoriesChanged()),this, SLOT(handleCategoriesChanged()));
+    QObject::connect(m_categoriesAxis,SIGNAL(categoriesChanged()),this, SLOT(handleCategoriesChanged()));
     handleCategoriesChanged();
 }
 
@@ -118,17 +118,22 @@ QSizeF ChartBarCategoryAxisY::sizeHint(Qt::SizeHint which, const QSizeF &constra
     qreal height = 0; // Height is irrelevant for Y axes with interval labels
 
     switch (which) {
-        case Qt::MinimumSize: {
+    case Qt::MinimumSize: {
+        if (labelsVisible()) {
             QRectF boundingRect = ChartPresenter::textBoundingRect(axis()->labelsFont(),
                                                                    QStringLiteral("..."),
                                                                    axis()->labelsAngle());
             width = boundingRect.width() + labelPadding() + base.width() + 1.0;
             if (base.width() > 0.0)
                 width += labelPadding();
-            sh = QSizeF(width, height);
-            break;
+        } else {
+            width = base.width() + 1.0;
         }
-        case Qt::PreferredSize:{
+        sh = QSizeF(width, height);
+        break;
+    }
+    case Qt::PreferredSize:{
+        if (labelsVisible()) {
             qreal labelWidth = 0.0;
             foreach (const QString& s, ticksList) {
                 QRectF rect = ChartPresenter::textBoundingRect(axis()->labelsFont(), s, axis()->labelsAngle());
@@ -137,13 +142,16 @@ QSizeF ChartBarCategoryAxisY::sizeHint(Qt::SizeHint which, const QSizeF &constra
             width = labelWidth + labelPadding() + base.width() + 1.0;
             if (base.width() > 0.0)
                 width += labelPadding();
-            sh = QSizeF(width, height);
-            break;
+        } else {
+            width = base.width() + 1.0;
         }
-        default:
-          break;
-      }
-      return sh;
+        sh = QSizeF(width, height);
+        break;
+    }
+    default:
+        break;
+    }
+    return sh;
 }
 
 QT_END_NAMESPACE

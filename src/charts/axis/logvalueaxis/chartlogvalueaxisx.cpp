@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2021 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Qt Charts module of the Qt Toolkit.
@@ -53,8 +53,8 @@ QList<qreal> ChartLogValueAxisX::calculateLayout() const
     QList<qreal> points;
     points.resize(m_axis->tickCount());
 
-    const qreal logMax = std::log10(m_axis->max()) / std::log10(m_axis->base());
-    const qreal logMin = std::log10(m_axis->min()) / std::log10(m_axis->base());
+    const qreal logMax = qLn(m_axis->max()) / qLn(m_axis->base());
+    const qreal logMin = qLn(m_axis->min()) / qLn(m_axis->base());
     const qreal leftEdge = qMin(logMin, logMax);
     const qreal ceilEdge = std::ceil(leftEdge);
 
@@ -91,18 +91,10 @@ QSizeF ChartLogValueAxisX::sizeHint(Qt::SizeHint which, const QSizeF &constraint
 {
     Q_UNUSED(constraint);
 
-    QSizeF sh;
-
-    QSizeF base = HorizontalAxis::sizeHint(which, constraint);
+    const QSizeF base = HorizontalAxis::sizeHint(which, constraint);
+    const int tickCount = m_axis->tickCount();
     QStringList ticksList;
-    qreal logMax = std::log10(m_axis->max()) / std::log10(m_axis->base());
-    qreal logMin = std::log10(m_axis->min()) / std::log10(m_axis->base());
-    int tickCount = qAbs(qCeil(logMax) - qCeil(logMin));
-
-    // If the high edge sits exactly on the tick value, add a tick
-    qreal highValue = logMin < logMax ? logMax : logMin;
-    if (qFuzzyCompare(highValue, std::ceil(highValue)))
-        tickCount++;
+    QSizeF sh;
 
     if (m_axis->max() > m_axis->min() && tickCount > 0)
         ticksList = createLogValueLabels(m_axis->min(), m_axis->max(), m_axis->base(), tickCount, m_axis->labelFormat());
@@ -115,26 +107,36 @@ QSizeF ChartLogValueAxisX::sizeHint(Qt::SizeHint which, const QSizeF &constraint
 
     switch (which) {
     case Qt::MinimumSize:{
-        QRectF boundingRect = ChartPresenter::textBoundingRect(axis()->labelsFont(),
-                                                               QStringLiteral("..."),
-                                                               axis()->labelsAngle());
-        width = boundingRect.width() / 2.0;
-        height = boundingRect.height() + labelPadding() + base.height() + 1.0;
+        if (labelsVisible()) {
+            QRectF boundingRect = ChartPresenter::textBoundingRect(axis()->labelsFont(),
+                                                                   QStringLiteral("..."),
+                                                                   axis()->labelsAngle());
+            width = boundingRect.width() / 2.0;
+            height = boundingRect.height() + labelPadding() + base.height() + 1.0;
+        } else {
+            width = 0;
+            height = base.height() + 1.0;
+        }
         sh = QSizeF(width, height);
         break;
     }
     case Qt::PreferredSize: {
-        qreal labelHeight = 0.0;
-        qreal firstWidth = -1.0;
-        foreach (const QString& s, ticksList) {
-            QRectF rect = ChartPresenter::textBoundingRect(axis()->labelsFont(), s, axis()->labelsAngle());
-            labelHeight = qMax(rect.height(), labelHeight);
-            width = rect.width();
-            if (firstWidth < 0.0)
-                firstWidth = width;
+        if (labelsVisible()) {
+            qreal labelHeight = 0.0;
+            qreal firstWidth = -1.0;
+            foreach (const QString& s, ticksList) {
+                QRectF rect = ChartPresenter::textBoundingRect(axis()->labelsFont(), s, axis()->labelsAngle());
+                labelHeight = qMax(rect.height(), labelHeight);
+                width = rect.width();
+                if (firstWidth < 0.0)
+                    firstWidth = width;
+            }
+            height = labelHeight + labelPadding() + base.height() + 1.0;
+            width = qMax(width, firstWidth) / 2.0;
+        } else {
+            height = base.height() + 1.0;
+            width = 0;
         }
-        height = labelHeight + labelPadding() + base.height() + 1.0;
-        width = qMax(width, firstWidth) / 2.0;
         sh = QSizeF(width, height);
         break;
     }

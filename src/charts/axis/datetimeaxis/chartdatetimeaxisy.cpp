@@ -108,16 +108,22 @@ QSizeF ChartDateTimeAxisY::sizeHint(Qt::SizeHint which, const QSizeF &constraint
         return sh;
 
     switch (which) {
-        case Qt::MinimumSize: {
+    case Qt::MinimumSize: {
+        if (labelsVisible()) {
             QRectF boundingRect = ChartPresenter::textBoundingRect(axis()->labelsFont(),
                                                                    QStringLiteral("..."),
                                                                    axis()->labelsAngle());
             width = boundingRect.width() + labelPadding() + base.width() + 1.0;
             height = boundingRect.height() / 2.0;
-            sh = QSizeF(width, height);
-            break;
+        } else {
+            width = base.width() + 1.0;
+            height = 0;
         }
-        case Qt::PreferredSize: {
+        sh = QSizeF(width, height);
+        break;
+    }
+    case Qt::PreferredSize: {
+        if (labelsVisible()) {
             qreal labelWidth = 0.0;
             qreal firstHeight = -1.0;
             foreach (const QString& s, ticksList) {
@@ -129,10 +135,14 @@ QSizeF ChartDateTimeAxisY::sizeHint(Qt::SizeHint which, const QSizeF &constraint
             }
             width = labelWidth + labelPadding() + base.width() + 2.0; //two pixels of tolerance
             height = qMax(height, firstHeight) / 2.0;
-            sh = QSizeF(width, height);
-            break;
+        } else {
+            width = base.width() + 2.0;
+            height = 0;
         }
-        default:
+        sh = QSizeF(width, height);
+        break;
+    }
+    default:
         break;
     }
 

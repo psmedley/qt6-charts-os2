@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2021 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Qt Charts module of the Qt Toolkit.
@@ -1078,22 +1078,22 @@ QAbstractAxisPrivate::~QAbstractAxisPrivate()
 {
 }
 
-void QAbstractAxisPrivate::setAlignment( Qt::Alignment alignment)
+void QAbstractAxisPrivate::setAlignment(Qt::Alignment alignment)
 {
-    switch(alignment) {
-        case Qt::AlignTop:
-        case Qt::AlignBottom:
+    switch (alignment) {
+    case Qt::AlignTop:
+    case Qt::AlignBottom:
         m_orientation = Qt::Horizontal;
         break;
-        case Qt::AlignLeft:
-        case Qt::AlignRight:
+    case Qt::AlignLeft:
+    case Qt::AlignRight:
         m_orientation = Qt::Vertical;
         break;
-        default:
-        qWarning()<<"No alignment specified !";
+    default:
+        qWarning("No alignment specified !");
         break;
-    };
-    m_alignment=alignment;
+    }
+    m_alignment = alignment;
 }
 
 void QAbstractAxisPrivate::setLabelsTruncated(bool labelsTruncated)
@@ -1156,7 +1156,7 @@ void QAbstractAxisPrivate::initializeGraphics(QGraphicsItem* parent)
 void QAbstractAxisPrivate::initializeAnimations(QChart::AnimationOptions options, int duration,
                                                 QEasingCurve &curve)
 {
-    ChartAxisElement *axis = m_item.data();
+    ChartAxisElement *axis = m_item.get();
     Q_ASSERT(axis);
     if (axis->animation())
         axis->animation()->stopAndDestroyLater();

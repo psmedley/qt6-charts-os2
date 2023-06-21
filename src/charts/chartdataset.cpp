@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2021 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Qt Charts module of the Qt Toolkit.
@@ -119,14 +119,14 @@ void ChartDataSet::addSeries(QAbstractSeries *series)
 /*
  * This method adds axis to chartdataset, axis ownership is taken from caller.
  */
-void ChartDataSet::addAxis(QAbstractAxis *axis, Qt::Alignment aligment)
+void ChartDataSet::addAxis(QAbstractAxis *axis, Qt::Alignment alignment)
 {
     if (m_axisList.contains(axis)) {
         qWarning() << QObject::tr("Can not add axis. Axis already on the chart.");
         return;
     }
 
-    axis->d_ptr->setAlignment(aligment);
+    axis->d_ptr->setAlignment(alignment);
 
     if (!axis->alignment()) {
         qWarning() << QObject::tr("No alignment specified !");
@@ -219,7 +219,7 @@ bool ChartDataSet::attachAxis(QAbstractSeries *series,QAbstractAxis *axis)
         return false;
     }
 
-    if (axis && !m_axisList.contains(axis)) {
+    if (!m_axisList.contains(axis)) {
         qWarning() << QObject::tr("Can not find axis on the chart.");
         return false;
     }
@@ -235,9 +235,10 @@ bool ChartDataSet::attachAxis(QAbstractSeries *series,QAbstractAxis *axis)
     }
 
     AbstractDomain *domain = series->d_ptr->domain();
-    AbstractDomain::DomainType type = selectDomain(attachedAxisList<<axis);
+    AbstractDomain::DomainType type = selectDomain(attachedAxisList << axis);
 
-    if (type == AbstractDomain::UndefinedDomain) return false;
+    if (type == AbstractDomain::UndefinedDomain)
+        return false;
 
     if (domain->type() != type) {
         AbstractDomain *old = domain;
@@ -254,9 +255,8 @@ bool ChartDataSet::attachAxis(QAbstractSeries *series,QAbstractAxis *axis)
     if (!domain->attachAxis(axis))
         return false;
 
-    QList<AbstractDomain *> blockedDomains;
     domain->blockRangeSignals(true);
-    blockedDomains << domain;
+    QList<AbstractDomain *> blockedDomains { domain };
 
     if (domain != series->d_ptr->domain()) {
         foreach (QAbstractAxis *axis, series->d_ptr->m_axes) {
@@ -280,8 +280,8 @@ bool ChartDataSet::attachAxis(QAbstractSeries *series,QAbstractAxis *axis)
             oldAxis->d_ptr->initializeDomain(domain);
     }
 
-    series->d_ptr->m_axes<<axis;
-    axis->d_ptr->m_series<<series;
+    series->d_ptr->m_axes << axis;
+    axis->d_ptr->m_series << series;
 
     series->d_ptr->initializeAxes();
     axis->d_ptr->initializeDomain(domain);
@@ -357,24 +357,24 @@ void ChartDataSet::createAxes(QAbstractAxis::AxisTypes type, Qt::Orientation ori
     //decide what axis should be created
 
     switch (type) {
-        case QAbstractAxis::AxisTypeValue:
+    case QAbstractAxis::AxisTypeValue:
         axis = new QValueAxis(this);
         break;
-        case QAbstractAxis::AxisTypeBarCategory:
+    case QAbstractAxis::AxisTypeBarCategory:
         axis = new QBarCategoryAxis(this);
         break;
-        case QAbstractAxis::AxisTypeCategory:
+    case QAbstractAxis::AxisTypeCategory:
         axis = new QCategoryAxis(this);
         break;
-        case QAbstractAxis::AxisTypeColor:
+    case QAbstractAxis::AxisTypeColor:
         axis = new QColorAxis(this);
         break;
 #if QT_CONFIG(charts_datetime_axis)
-        case QAbstractAxis::AxisTypeDateTime:
+    case QAbstractAxis::AxisTypeDateTime:
         axis = new QDateTimeAxis(this);
         break;
 #endif
-        default:
+    default:
         axis = 0;
         break;
     }
