@@ -537,7 +537,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \fn void QXYSeries::lightMarkerChanged(const QImage &lightMarker)
     This signal is emitted when the light marker image changes to \a lightMarker.
-    \sa QXYSeries::setLightMarker();
+    \sa QXYSeries::setLightMarker()
     \since 6.2
 */
 
@@ -1809,7 +1809,7 @@ QAbstractAxis* QXYSeriesPrivate::createDefaultAxis(Qt::Orientation orientation) 
 void QXYSeriesPrivate::initializeAnimations(QChart::AnimationOptions options,
                                             int duration, QEasingCurve &curve)
 {
-    XYChart *item = static_cast<XYChart *>(m_item.data());
+    XYChart *item = static_cast<XYChart *>(m_item.get());
     Q_ASSERT(item);
     if (item->animation())
         item->animation()->stopAndDestroyLater();
