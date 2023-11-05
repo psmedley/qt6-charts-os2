@@ -113,6 +113,7 @@ qt_internal_add_module(Charts
         Qt::Core
         Qt::Gui
         Qt::Widgets
+    OS2_SHORT_NAME Qt6Chrts
 )
 
 qt_internal_extend_target(Charts CONDITION QT_FEATURE_opengl
