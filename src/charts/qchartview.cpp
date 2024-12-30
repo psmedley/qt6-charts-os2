@@ -144,7 +144,7 @@ void QChartView::mousePressEvent(QMouseEvent *event)
 {
 #ifndef QT_NO_RUBBERBAND
     QGraphicsItem *itemUnderCursor = itemAt(event->pos());
-    bool itemUnderCursorAcceptsLMB = (itemUnderCursor->acceptedMouseButtons() & Qt::LeftButton);
+    bool itemUnderCursorAcceptsLMB = itemUnderCursor && (itemUnderCursor->acceptedMouseButtons() & Qt::LeftButton);
     bool clickThrough = d_ptr->m_rubberBandFlags.testFlag(ClickThroughRubberBand);
     QRectF plotArea = d_ptr->m_chart->plotArea();
     if (d_ptr->m_rubberBand && d_ptr->m_rubberBand->isEnabled()
@@ -250,9 +250,7 @@ void QChartView::mouseReleaseEvent(QMouseEvent *event)
 #if QT_CONFIG(wheelevent)
 void QChartView::wheelEvent(QWheelEvent *event)
 {
-    Q_UNUSED(event);
-    // We just need to override wheelEvent, or scrolling won't work correctly on macOS trackpad
-    // (QTBUG-77403)
+    QGraphicsView::wheelEvent(event);
 }
 #endif
 #endif
