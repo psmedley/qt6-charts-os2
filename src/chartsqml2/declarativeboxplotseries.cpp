@@ -1,6 +1,8 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
+#undef QT_NO_FOREACH // this file contains unported legacy Q_FOREACH uses
+
 #include "declarativebarseries_p.h"
 #include "declarativeboxplotseries_p.h"
 #include <QtCharts/QBoxSet>
@@ -11,7 +13,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \qmltype BoxSet
-    \instantiates QBoxSet
+    \nativetype QBoxSet
     \inqmlmodule QtCharts
 
     \brief Represents one item in a box-and-whiskers chart.
@@ -126,7 +128,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \qmltype BoxPlotSeries
-    \instantiates QBoxPlotSeries
+    \nativetype QBoxPlotSeries
     \inqmlmodule QtCharts
 
     \inherits AbstractSeries

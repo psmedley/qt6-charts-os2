@@ -1,6 +1,8 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
+#undef QT_NO_FOREACH // this file contains unported legacy Q_FOREACH uses
+
 #include <QtCharts/QBarCategoryAxis>
 #include <private/qbarcategoryaxis_p.h>
 #include <private/chartbarcategoryaxisx_p.h>
@@ -38,7 +40,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \qmltype BarCategoryAxis
-    \instantiates QBarCategoryAxis
+    \nativetype QBarCategoryAxis
     \inqmlmodule QtCharts
 
     \inherits AbstractAxis
