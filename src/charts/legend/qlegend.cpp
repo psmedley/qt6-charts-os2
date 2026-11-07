@@ -33,7 +33,8 @@ QT_BEGIN_NAMESPACE
     detached to make it independent of chart layout. Legend objects cannot be created or deleted,
     but they can be referenced via the QChart class.
 
-    \image examples_percentbarchart_legend.png
+    \image examples_percentbarchart_legend.png {Screenshot only showing the legends of a bar chart
+           that is blurred}
 
     \sa QChart
 */
@@ -55,7 +56,8 @@ QT_BEGIN_NAMESPACE
         }
     \endcode
 
-    \image examples_percentbarchart_legend.png
+    \image examples_percentbarchart_legend.png {Screenshot only showing the legends of a bar chart
+           that is blurred}
 
     \note There is no QML API available for modifying legend markers. Markers
     can be modified by creating a custom legend. For more information, see
@@ -253,6 +255,11 @@ QT_BEGIN_NAMESPACE
 /*!
     \fn void QLegend::showToolTipsChanged(bool showToolTips)
     This signal is emitted when the visibility of tooltips is changed to \a showToolTips.
+*/
+
+/*!
+    \fn void QLegend::markerShapeChanged(MarkerShape shape)
+    This signal is emitted when the shape of the legend markers changes to \a shape.
 */
 
 QLegend::QLegend(QChart *chart): QGraphicsWidget(chart),
@@ -583,6 +590,11 @@ void QLegend::setInteractive(bool interactive)
     }
 }
 
+/*!
+    \fn void QLegend::interactiveChanged(bool interactive)
+    \internal
+*/
+
 QLegend::MarkerShape QLegend::markerShape() const
 {
     return d_ptr->m_markerShape;
@@ -675,7 +687,7 @@ QList<QLegendMarker*> QLegendPrivate::markers(QAbstractSeries *series)
 
     // Create filtered list
     QList<QLegendMarker *> markers;
-    foreach (QLegendMarker *marker, m_markers) {
+    for (auto marker : std::as_const(m_markers)) {
         if (marker->series() == series) {
             markers.append(marker);
         }
@@ -720,7 +732,7 @@ void QLegendPrivate::handleSeriesRemoved(QAbstractSeries *series)
 
     // Find out, which markers to remove
     QList<QLegendMarker *> removed;
-    foreach (QLegendMarker *m, m_markers) {
+    for (auto m : std::as_const(m_markers)) {
         if (m->series() == series) {
             removed << m;
         }
@@ -738,7 +750,7 @@ void QLegendPrivate::handleSeriesVisibleChanged()
     QAbstractSeries *series = qobject_cast<QAbstractSeries *> (sender());
     Q_ASSERT(series);
 
-    foreach (QLegendMarker *marker, m_markers) {
+    for (auto marker : std::as_const(m_markers)) {
         if (marker->series() == series) {
             marker->setVisible(series->isVisible());
         }
@@ -870,7 +882,7 @@ void QLegendPrivate::decorateMarkers(const QList<QLegendMarker *> &markers)
 
 void QLegendPrivate::updateToolTips()
 {
-    foreach (QLegendMarker *m, m_markers) {
+    for (auto m : std::as_const(m_markers)) {
         if (m->d_ptr->m_item->displayedLabel() != m->label())
             m->d_ptr->m_item->setToolTip(m->label());
         else

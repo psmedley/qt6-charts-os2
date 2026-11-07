@@ -22,7 +22,8 @@ QT_BEGIN_NAMESPACE
     be specified freely.
 
     Example code on how to use QCategoryAxis:
-    \image api_category_axis.png
+    \image api_category_axis.png {Screenshot cutout showing the y-axis being
+           categorised by first, second, and third}
     \code
     QChartView *chartView = new QChartView;
     QLineSeries *series = new QLineSeries;
@@ -51,7 +52,8 @@ QT_BEGIN_NAMESPACE
     The widths of the category ranges can be specified freely.
 
     For example:
-    \image examples_qmlaxes3.png
+    \image examples_qmlaxes3.png {Line chart with a category axis labeled
+           critical, low, normal, high, and extremely high}
     \snippet qmlchartsgallery/qml/CategoryAxis.qml 1
 */
 
@@ -140,7 +142,7 @@ QCategoryAxis::QCategoryAxis(QCategoryAxisPrivate &d, QObject *parent): QValueAx
 }
 
 /*!
-    \qmlmethod CategoryAxis::append(string label, real endValue)
+    \qmlmethod void CategoryAxis::append(string label, real endValue)
     Appends a new category to the axis with the label \a label. A category label has to be unique.
     \a endValue specifies the high end limit of the category.
     It has to be greater than the high end limit of the previous category.
@@ -214,7 +216,7 @@ qreal QCategoryAxis::endValue(const QString &categoryLabel) const
 }
 
 /*!
-    \qmlmethod CategoryAxis::remove(string label)
+    \qmlmethod void CategoryAxis::remove(string label)
     Removes a category specified by the label \a label from the axis.
 */
 /*!
@@ -249,7 +251,7 @@ void QCategoryAxis::remove(const QString &categoryLabel)
 }
 
 /*!
-    \qmlmethod CategoryAxis::replace(string oldLabel, string newLabel)
+    \qmlmethod void CategoryAxis::replace(string oldLabel, string newLabel)
     Replaces an existing category label specified by \a oldLabel with \a newLabel.
     If the old label does not exist, the method returns without making any changes.
 */
@@ -352,6 +354,7 @@ void QCategoryAxisPrivate::initializeGraphics(QGraphicsItem *parent)
     }
 
     m_item.reset(axis);
+    // AXIVION Next Line Qt-SkippedBaseMethod: intentionally skipping QValueAxisPrivate
     QAbstractAxisPrivate::initializeGraphics(parent);
 }
 

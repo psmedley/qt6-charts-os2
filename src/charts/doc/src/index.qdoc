@@ -11,14 +11,15 @@
     types. Users can easily create impressive charts by selecting one of the
     themes.
 
-    \include maintenance-phase.qdocinc
+    \include deprecation-phase.qdocinc
 
     The Qt Charts QML API is an intuitive and simple way to show charts in your
     QML applications.
 
     This example shows how to create a simple line chart:
 
-    \image examples_qmlchart2.png
+    \image examples_qmlchart2.png {Line chart with a single rising line that
+           peaks and then levels off}
     \snippet qmlchartsgallery/qml/LineSeries.qml 1
 
     \section1 Using the Module

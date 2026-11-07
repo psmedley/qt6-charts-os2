@@ -20,7 +20,8 @@ BoxPlotChartItem::BoxPlotChartItem(QBoxPlotSeries *series, QGraphicsItem *item) 
     m_animation(0)
 {
     setAcceptedMouseButtons({});
-    connect(series, SIGNAL(boxsetsRemoved(QList<QBoxSet *>)), this, SLOT(handleBoxsetRemove(QList<QBoxSet *>)));
+    connect(series, SIGNAL(boxsetsRemoved(QList<QBoxSet*>)),
+            this, SLOT(handleBoxsetRemove(QList<QBoxSet*>)));
     connect(series, SIGNAL(visibleChanged()), this, SLOT(handleSeriesVisibleChanged()));
     connect(series, SIGNAL(opacityChanged()), this, SLOT(handleOpacityChanged()));
     connect(series->d_func(), SIGNAL(restructuredBoxes()), this, SLOT(handleDataStructureChanged()));
@@ -46,7 +47,7 @@ void BoxPlotChartItem::setAnimation(BoxPlotAnimation *animation)
 {
     m_animation = animation;
     if (m_animation) {
-        foreach (BoxWhiskers *item, m_boxTable.values())
+        for (auto item : std::as_const(m_boxTable))
             m_animation->addBox(item);
         handleDomainUpdated();
     }
@@ -74,17 +75,18 @@ void BoxPlotChartItem::handleDataStructureChanged()
             // Item is not yet created, make a box and add it to hash table
             box = new BoxWhiskers(set, domain(), this);
             m_boxTable.insert(set, box);
-            connect(box, SIGNAL(clicked(QBoxSet *)), m_series, SIGNAL(clicked(QBoxSet *)));
-            connect(box, SIGNAL(hovered(bool, QBoxSet *)), m_series, SIGNAL(hovered(bool, QBoxSet *)));
-            connect(box, SIGNAL(pressed(QBoxSet *)), m_series, SIGNAL(pressed(QBoxSet *)));
-            connect(box, SIGNAL(released(QBoxSet *)), m_series, SIGNAL(released(QBoxSet *)));
-            connect(box, SIGNAL(doubleClicked(QBoxSet *)),
-                    m_series, SIGNAL(doubleClicked(QBoxSet *)));
-            connect(box, SIGNAL(clicked(QBoxSet *)), set, SIGNAL(clicked()));
-            connect(box, SIGNAL(hovered(bool, QBoxSet *)), set, SIGNAL(hovered(bool)));
-            connect(box, SIGNAL(pressed(QBoxSet *)), set, SIGNAL(pressed()));
-            connect(box, SIGNAL(released(QBoxSet *)), set, SIGNAL(released()));
-            connect(box, SIGNAL(doubleClicked(QBoxSet *)), set, SIGNAL(doubleClicked()));
+            connect(box, SIGNAL(clicked(QBoxSet*)), m_series, SIGNAL(clicked(QBoxSet*)));
+            connect(box, SIGNAL(hovered(bool,QBoxSet*)),
+                    m_series, SIGNAL(hovered(bool,QBoxSet*)));
+            connect(box, SIGNAL(pressed(QBoxSet*)), m_series, SIGNAL(pressed(QBoxSet*)));
+            connect(box, SIGNAL(released(QBoxSet*)), m_series, SIGNAL(released(QBoxSet*)));
+            connect(box, SIGNAL(doubleClicked(QBoxSet*)),
+                    m_series, SIGNAL(doubleClicked(QBoxSet*)));
+            connect(box, SIGNAL(clicked(QBoxSet*)), set, SIGNAL(clicked()));
+            connect(box, SIGNAL(hovered(bool,QBoxSet*)), set, SIGNAL(hovered(bool)));
+            connect(box, SIGNAL(pressed(QBoxSet*)), set, SIGNAL(pressed()));
+            connect(box, SIGNAL(released(QBoxSet*)), set, SIGNAL(released()));
+            connect(box, SIGNAL(doubleClicked(QBoxSet*)), set, SIGNAL(doubleClicked()));
 
             // Set the decorative issues for the newly created box
             // so that the brush and pen already defined for the set are kept.
@@ -112,18 +114,18 @@ void BoxPlotChartItem::handleDataStructureChanged()
 
 void BoxPlotChartItem::handleUpdatedBars()
 {
-    foreach (BoxWhiskers *item, m_boxTable.values()) {
+    for (auto item : std::as_const(m_boxTable)) {
         item->setBrush(m_series->brush());
         item->setPen(m_series->pen());
         item->setBoxOutlined(m_series->boxOutlineVisible());
         item->setBoxWidth(m_series->boxWidth());
     }
     // Override with QBoxSet specific settings
-    foreach (QBoxSet *set, m_boxTable.keys()) {
+    for (const auto &[set, item] : std::as_const(m_boxTable).asKeyValueRange()) {
         if (set->brush().style() != Qt::NoBrush)
-            m_boxTable.value(set)->setBrush(set->brush());
+            item->setBrush(set->brush());
         if (set->pen().style() != Qt::NoPen)
-            m_boxTable.value(set)->setPen(set->pen());
+            item->setPen(set->pen());
     }
 }
 
@@ -145,7 +147,7 @@ void BoxPlotChartItem::handleDomainUpdated()
     // snip a bit off from the whisker at the grid line
     m_boundingRect.setRect(0.0, -1.0, domain()->size().width(), domain()->size().height() + 1.0);
 
-    foreach (BoxWhiskers *item, m_boxTable.values()) {
+    for (auto item : std::as_const(m_boxTable)) {
         item->updateGeometry(domain());
 
         // If the animation is set, start the animation for each BoxWhisker item
@@ -156,7 +158,7 @@ void BoxPlotChartItem::handleDomainUpdated()
 
 void BoxPlotChartItem::handleLayoutChanged()
 {
-    foreach (BoxWhiskers *item, m_boxTable.values()) {
+    for (auto item : std::as_const(m_boxTable)) {
         if (m_animation)
             m_animation->setAnimationStart(item);
 

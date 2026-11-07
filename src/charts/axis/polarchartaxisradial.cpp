@@ -34,8 +34,6 @@ void PolarChartAxisRadial::updateGeometry()
     QList<QGraphicsItem *> gridItemList = gridItems();
     QList<QGraphicsItem *> labelItemList = labelItems();
     QList<QGraphicsItem *> shadeItemList = shadeItems();
-    QList<QGraphicsItem *> minorGridItemList = minorGridItems();
-    QList<QGraphicsItem *> minorArrowItemList = minorArrowItems();
     QGraphicsTextItem* title = titleItem();
     qreal radius = axisGeometry().height() / 2.0;
 
@@ -221,7 +219,7 @@ void PolarChartAxisRadial::updateGeometry()
         title->setRotation(270.0);
     }
 
-    QGraphicsLayoutItem::updateGeometry();
+    PolarChartAxis::updateGeometry();
 }
 
 Qt::Orientation PolarChartAxisRadial::orientation() const

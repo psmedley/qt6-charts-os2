@@ -53,6 +53,7 @@ void ChartLogValueAxisY::updateGeometry()
 void ChartLogValueAxisY::handleBaseChanged(qreal base)
 {
     Q_UNUSED(base);
+    // AXIVION Next Line Qt-SkippedBaseMethod: not an override
     QGraphicsLayoutItem::updateGeometry();
     if(presenter()) presenter()->layout()->invalidate();
 }
@@ -60,6 +61,7 @@ void ChartLogValueAxisY::handleBaseChanged(qreal base)
 void ChartLogValueAxisY::handleLabelFormatChanged(const QString &format)
 {
     Q_UNUSED(format);
+    // AXIVION Next Line Qt-SkippedBaseMethod: not an override
     QGraphicsLayoutItem::updateGeometry();
     if(presenter()) presenter()->layout()->invalidate();
 }
@@ -101,7 +103,7 @@ QSizeF ChartLogValueAxisY::sizeHint(Qt::SizeHint which, const QSizeF &constraint
         if (labelsVisible()) {
             qreal labelWidth = 0.0;
             qreal firstHeight = -1.0;
-            foreach (const QString& s, ticksList) {
+            for (const QString &s : std::as_const(ticksList)) {
                 QRectF rect = ChartPresenter::textBoundingRect(axis()->labelsFont(), s, axis()->labelsAngle());
                 labelWidth = qMax(rect.width(), labelWidth);
                 height = rect.height();

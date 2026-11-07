@@ -329,6 +329,17 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \fn void QXYSeries::selectedColorChanged(const QColor &color)
+    This signal is emitted when the color of the selected points changes to
+    \a color.
+*/
+
+/*!
+    \fn void QXYSeries::bestFitLinePenChanged(const QPen &pen)
+    \internal
+*/
+
+/*!
     \fn void QXYSeries::clicked(const QPointF& point)
     This signal is emitted when the user triggers a mouse event by
     clicking the point \a point in the chart.
@@ -532,41 +543,51 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
+    \fn void QXYSeries::selectedLightMarkerChanged(const QImage &selectedLightMarker)
+    \internal
+*/
+
+/*!
+    \fn void QXYSeries::pointsConfigurationChanged(const QXYSeries::PointsConfigurationHash &configuration)
+    \internal
+*/
+
+/*!
     \fn void QXYSeriesPrivate::seriesUpdated()
     \internal
 */
 
 /*!
-    \qmlmethod XYSeries::append(real x, real y)
+    \qmlmethod void XYSeries::append(real x, real y)
     Appends a point with the coordinates \a x and \a y to the series.
 */
 
 /*!
-    \qmlmethod XYSeries::replace(real oldX, real oldY, real newX, real newY)
+    \qmlmethod void XYSeries::replace(real oldX, real oldY, real newX, real newY)
     Replaces the point with the coordinates \a oldX and \a oldY with the point
     with the coordinates \a newX and \a newY. Does nothing if the old point does
     not exist.
 */
 
 /*!
-    \qmlmethod XYSeries::remove(real x, real y)
+    \qmlmethod void XYSeries::remove(real x, real y)
     Removes the point with the coordinates \a x and \a y from the series. Does
     nothing if the point does not exist.
 */
 
 /*!
-    \qmlmethod XYSeries::remove(int index)
+    \qmlmethod void XYSeries::remove(int index)
     Removes the point at the position specified by \a index from the series.
 */
 
 /*!
-    \qmlmethod XYSeries::removePoints(int index, int count)
+    \qmlmethod void XYSeries::removePoints(int index, int count)
     Removes the number of points specified by \a count from the series starting
     at the position specified by \a index.
 */
 
 /*!
-    \qmlmethod XYSeries::insert(int index, real x, real y)
+    \qmlmethod void XYSeries::insert(int index, real x, real y)
     Inserts a point with the coordinates \a x and \a y to the position specified
     by \a index in the series. If the index is 0 or less than 0, the point is
     prepended to the list of points. If the index is equal to or greater than
@@ -575,7 +596,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \qmlmethod QPointF XYSeries::at(int index)
+    \qmlmethod point XYSeries::at(int index)
     Returns the point at the position specified by \a index. Returns (0, 0) if
     the index is not valid.
 */
@@ -627,7 +648,7 @@ void QXYSeries::append(const QPointF &point)
  */
 void QXYSeries::append(const QList<QPointF> &points)
 {
-    foreach (const QPointF &point , points)
+    for (const QPointF &point : points)
         append(point);
 }
 
@@ -691,8 +712,16 @@ void QXYSeries::replace(int index, const QPointF &newPoint)
 void QXYSeries::replace(const QList<QPointF> &points)
 {
     Q_D(QXYSeries);
+    const bool needUpdateSelection = d->m_points.size() > points.size();
     d->m_points = points;
+    if (needUpdateSelection) {
+        d->m_selectedPoints.removeIf([maxIdx = points.size() - 1](int idx) {
+            return idx > maxIdx;
+        });
+    }
     emit pointsReplaced();
+    if (needUpdateSelection)
+        emit selectedPointsChanged();
 }
 
 /*!
@@ -768,11 +797,9 @@ void QXYSeries::clearPointsConfiguration(const QXYSeries::PointConfiguration key
 {
     Q_D(QXYSeries);
     bool needsUpdate = false;
-    for (const int &index : d->m_pointsConfiguration.keys()) {
-        auto &conf = d->m_pointsConfiguration[index];
+    for (auto &conf : d->m_pointsConfiguration) {
         if (conf.contains(key)) {
             conf.remove(key);
-            d->m_pointsConfiguration[index] = conf;
             needsUpdate = true;
         }
     }
@@ -823,7 +850,8 @@ void QXYSeries::clearPointsConfiguration(const QXYSeries::PointConfiguration key
     The point at index 6 has a custom label \e {This Point} thanks to the
     QXYSeries::PointConfiguration::LabelFormat configuration value.
     Below is an example of a chart created in this way:
-    \image xyseries_point_configuration.png
+    \image xyseries_point_configuration.png {Screenshot showing a line chart with two dots on it,
+           one being red and the other being blue}
 
     \sa pointsConfiguration(), clearPointsConfiguration()
     \since 6.2

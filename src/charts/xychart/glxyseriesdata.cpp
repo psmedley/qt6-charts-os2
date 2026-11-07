@@ -137,7 +137,7 @@ void GLXYSeriesDataManager::removeSeries(const QXYSeries *series)
 
 void GLXYSeriesDataManager::cleanup()
 {
-    foreach (GLXYSeriesData *data, m_seriesDataMap.values())
+    for (auto data : std::as_const(m_seriesDataMap))
         delete data;
     m_seriesDataMap.clear();
     m_mapDirty = true;
@@ -209,11 +209,12 @@ void GLXYSeriesDataManager::handleAxisReverseChanged(const QList<QAbstractSeries
 {
     bool reverseX = false;
     bool reverseY = false;
-    foreach (QAbstractSeries *series, seriesList) {
+    for (auto series : seriesList) {
         if (QXYSeries *xyseries = qobject_cast<QXYSeries *>(series)) {
             GLXYSeriesData *data = m_seriesDataMap.value(xyseries);
             if (data) {
-                foreach (QAbstractAxis* axis, xyseries->attachedAxes()) {
+                const auto &axes = xyseries->attachedAxes();
+                for (auto axis : axes) {
                     if (axis->isReverse()) {
                         if (axis->orientation() == Qt::Horizontal)
                             reverseX = true;

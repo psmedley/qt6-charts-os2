@@ -13,7 +13,7 @@
 #ifndef GLXYSERIESDATA_H
 #define GLXYSERIESDATA_H
 
-#include <QtCore/QMap>
+#include <QtCore/qhash.h>
 #include <QtCharts/QAbstractSeries>
 #include <QtCharts/QXYSeries>
 #include <QtCharts/private/qchartglobal_p.h>
@@ -50,7 +50,7 @@ public:
     }
 };
 
-typedef QMap<const QXYSeries *, GLXYSeriesData *> GLXYDataMap;
+typedef QHash<const QXYSeries *, GLXYSeriesData *> GLXYDataMap;
 
 class Q_CHARTS_EXPORT GLXYSeriesDataManager : public QObject
 {
@@ -70,7 +70,7 @@ public:
     bool mapDirty() const { return m_mapDirty; }
     void clearAllDirty() {
         m_mapDirty = false;
-        for (GLXYSeriesData *data : m_seriesDataMap)
+        for (GLXYSeriesData *data : std::as_const(m_seriesDataMap))
             data->dirty = false;
     }
     void handleAxisReverseChanged(const QList<QAbstractSeries *> &seriesList);

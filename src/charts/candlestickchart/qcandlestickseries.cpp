@@ -37,7 +37,8 @@ QT_BEGIN_NAMESPACE
 
     See the \l {Charts with Widgets Gallery} to learn how to create
     a candlestick chart.
-    \image examples_candlestickchart.png
+    \image examples_candlestickchart.png {Candlestick chart of daily stock
+           data with green rising and red falling candles over a month}
 
     \sa QCandlestickSet, QBarCategoryAxis, QDateTimeAxis, QValueAxis
 */
@@ -86,7 +87,8 @@ QT_BEGIN_NAMESPACE
     \endcode
 
     \beginfloatleft
-    \image examples_qmlcandlestick.png
+    \image examples_qmlcandlestick.png {Screenshot showing a candlestick
+           series example with the x axis describing date times}
     \endfloat
     \clearfloat
 
@@ -430,7 +432,7 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \qmlmethod CandlestickSeries::at(int index)
+    \qmlmethod CandlestickSet CandlestickSeries::at(int index)
     Returns the candlestick item at the position specified by \a index. Returns
     null if the index is not valid.
 */
@@ -454,7 +456,7 @@ QCandlestickSeries::~QCandlestickSeries()
 }
 
 /*!
-    \qmlmethod CandlestickSeries::append(CandlestickSet set)
+    \qmlmethod bool CandlestickSeries::append(CandlestickSet set)
     Adds a single candlestick item specified by \a set to the series and takes
     ownership of it. If the item is null or it is already in the series, it
     is not appended.
@@ -477,7 +479,7 @@ bool QCandlestickSeries::append(QCandlestickSet *set)
 }
 
 /*!
-    \qmlmethod CandlestickSeries::remove(CandlestickSet set)
+    \qmlmethod bool CandlestickSeries::remove(CandlestickSet set)
     Removes a single candlestick item, specified by \a set, from the series.
 
     Returns \c true if the item is successfully deleted, \c false otherwise.
@@ -528,7 +530,7 @@ bool QCandlestickSeries::remove(const QList<QCandlestickSet *> &sets)
     if (success) {
         emit candlestickSetsRemoved(sets);
         emit countChanged();
-        foreach (QCandlestickSet *set, sets)
+        for (auto set : sets)
             delete set;
     }
 
@@ -536,7 +538,7 @@ bool QCandlestickSeries::remove(const QList<QCandlestickSet *> &sets)
 }
 
 /*!
-    \qmlmethod CandlestickSeries::insert(int index, CandlestickSet set)
+    \qmlmethod bool CandlestickSeries::insert(int index, CandlestickSet set)
     Inserts the candlestick item specified by \a set to the series at the
     position specified by \a index. Takes ownership of the item. If the
     item is null or already belongs to the series, it is not inserted.
@@ -588,7 +590,7 @@ bool QCandlestickSeries::take(QCandlestickSet *set)
 }
 
 /*!
-    \qmlmethod CandlestickSeries::clear()
+    \qmlmethod void CandlestickSeries::clear()
     Removes all candlestick items from the series and permanently deletes them.
 */
 
@@ -605,7 +607,7 @@ void QCandlestickSeries::clear()
     if (success) {
         emit candlestickSetsRemoved(sets);
         emit countChanged();
-        foreach (QCandlestickSet *set, sets)
+        for (auto set : std::as_const(sets))
             delete set;
     }
 }
@@ -940,7 +942,7 @@ void QCandlestickSeriesPrivate::initializeDomain()
 
 void QCandlestickSeriesPrivate::initializeAxes()
 {
-    foreach (QAbstractAxis* axis, m_axes) {
+    for (auto axis : std::as_const(m_axes)) {
         if (axis->type() == QAbstractAxis::AxisTypeBarCategory) {
             if (axis->orientation() == Qt::Horizontal)
                 populateBarCategories(qobject_cast<QBarCategoryAxis *>(axis));
@@ -975,10 +977,10 @@ void QCandlestickSeriesPrivate::initializeGraphics(QGraphicsItem *parent)
     QAbstractSeriesPrivate::initializeGraphics(parent);
 
     if (m_chart) {
-        connect(m_chart->d_ptr->m_dataset, SIGNAL(seriesAdded(QAbstractSeries *)),
-                this, SLOT(handleSeriesChange(QAbstractSeries *)));
-        connect(m_chart->d_ptr->m_dataset, SIGNAL(seriesRemoved(QAbstractSeries *)),
-                this, SLOT(handleSeriesRemove(QAbstractSeries *)));
+        connect(m_chart->d_ptr->m_dataset, SIGNAL(seriesAdded(QAbstractSeries*)),
+                this, SLOT(handleSeriesChange(QAbstractSeries*)));
+        connect(m_chart->d_ptr->m_dataset, SIGNAL(seriesRemoved(QAbstractSeries*)),
+                this, SLOT(handleSeriesRemove(QAbstractSeries*)));
 
         item->handleCandlestickSeriesChange();
     }
@@ -1037,14 +1039,14 @@ QAbstractAxis* QCandlestickSeriesPrivate::createDefaultAxis(Qt::Orientation orie
 
 bool QCandlestickSeriesPrivate::append(const QList<QCandlestickSet *> &sets)
 {
-    foreach (QCandlestickSet *set, sets) {
+    for (auto set : sets) {
         if ((set == 0) || m_sets.contains(set) || set->d_ptr->m_series)
             return false; // Fail if any of the sets is null or is already appended.
         if (sets.count(set) != 1)
             return false; // Also fail if the same set occurs more than once in the given list.
     }
 
-    foreach (QCandlestickSet *set, sets) {
+    for (auto set : sets) {
         m_sets.append(set);
         connect(set->d_func(), SIGNAL(updatedLayout()), this, SIGNAL(updatedLayout()));
         connect(set->d_func(), SIGNAL(updatedCandlestick()), this, SIGNAL(updatedCandlesticks()));
@@ -1059,14 +1061,14 @@ bool QCandlestickSeriesPrivate::remove(const QList<QCandlestickSet *> &sets)
     if (sets.size() == 0)
         return false;
 
-    foreach (QCandlestickSet *set, sets) {
+    for (auto set : sets) {
         if ((set == 0) || (!m_sets.contains(set)))
             return false; // Fail if any of the sets is null or is not in series.
         if (sets.count(set) != 1)
             return false; // Also fail if the same set occurs more than once in the given list.
     }
 
-    foreach (QCandlestickSet *set, sets) {
+    for (auto set : sets) {
         set->d_ptr->m_series = nullptr;
         m_sets.removeOne(set);
         disconnect(set->d_func(), SIGNAL(updatedLayout()), this, SIGNAL(updatedLayout()));

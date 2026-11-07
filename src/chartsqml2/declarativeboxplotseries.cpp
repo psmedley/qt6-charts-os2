@@ -58,11 +58,11 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \qmlmethod void BoxSet::at(int index)
+    \qmlmethod real BoxSet::at(int index)
     Returns the value in the position specified by \a index.
 */
 /*!
-    \qmlmethod void BoxSet::append(qreal value)
+    \qmlmethod void BoxSet::append(real value)
     Appends the new value specified by \a value to the end of the box-and-whiskers item.
 */
 /*!
@@ -167,7 +167,8 @@ QT_BEGIN_NAMESPACE
     \endcode
 
     \beginfloatleft
-    \image examples_qmlboxplot.png
+    \image examples_qmlboxplot.png {Screenshot showing a box plot chart displaying an income
+           across five months from January to May}
     \endfloat
     \clearfloat
 
@@ -175,30 +176,30 @@ QT_BEGIN_NAMESPACE
 */
 
 /*!
-    \qmlmethod BoxPlotSeries::at(int index)
+    \qmlmethod BoxSet BoxPlotSeries::at(int index)
     Returns the box-and-whiskers item in the position specified by \a index.
 */
 
 /*!
-    \qmlmethod BoxPlotSeries::append(string label, VariantList values)
+    \qmlmethod void BoxPlotSeries::append(string label, VariantList values)
     Appends a new box-and-whiskers item with the label specified by \a label and the values
     specified by \a values to the series.
  */
 /*!
-    \qmlmethod BoxPlotSeries::append(BoxSet box)
+    \qmlmethod void BoxPlotSeries::append(BoxSet box)
     Appends the box-and-whiskers item specified by \a box to the series.
 */
 /*!
-    \qmlmethod BoxPlotSeries::insert(int index, string label, VariantList values)
+    \qmlmethod void BoxPlotSeries::insert(int index, string label, VariantList values)
     Inserts a new box-and-whiskers item with the label specified by \a label and the values
     specified by \a values to the series at the position specified by \a index.
 */
 /*!
-    \qmlmethod BoxPlotSeries::remove(QBoxSet boxset)
+    \qmlmethod void BoxPlotSeries::remove(QBoxSet boxset)
     Removes the box-and-whiskers item specified by \a boxset from the series.
 */
 /*!
-    \qmlmethod BoxPlotSeries::clear()
+    \qmlmethod void BoxPlotSeries::clear()
     Removes all box-and-whiskers items from the series and permanently deletes them.
 */
 /*!
@@ -362,7 +363,7 @@ DeclarativeBoxPlotSeries::DeclarativeBoxPlotSeries(QQuickItem *parent) :
     connect(m_axes, SIGNAL(axisYChanged(QAbstractAxis*)), this, SIGNAL(axisYChanged(QAbstractAxis*)));
     connect(m_axes, SIGNAL(axisXTopChanged(QAbstractAxis*)), this, SIGNAL(axisXTopChanged(QAbstractAxis*)));
     connect(m_axes, SIGNAL(axisYRightChanged(QAbstractAxis*)), this, SIGNAL(axisYRightChanged(QAbstractAxis*)));
-    connect(this, SIGNAL(hovered(bool, QBoxSet*)), this, SLOT(onHovered(bool, QBoxSet*)));
+    connect(this, SIGNAL(hovered(bool,QBoxSet*)), this, SLOT(onHovered(bool,QBoxSet*)));
     connect(this, SIGNAL(clicked(QBoxSet*)), this, SLOT(onClicked(QBoxSet*)));
     connect(this, SIGNAL(brushChanged()), this, SLOT(handleBrushChanged()));
     connect(this, SIGNAL(pressed(QBoxSet*)), this, SLOT(onPressed(QBoxSet*)));
@@ -376,7 +377,8 @@ void DeclarativeBoxPlotSeries::classBegin()
 
 void DeclarativeBoxPlotSeries::componentComplete()
 {
-    foreach (QObject *child, children()) {
+    const auto childlist = children();
+    for (QObject *child : childlist) {
         if (qobject_cast<DeclarativeBoxSet *>(child)) {
             QBoxPlotSeries::append(qobject_cast<DeclarativeBoxSet *>(child));
         } else if (qobject_cast<QVBoxPlotModelMapper *>(child)) {

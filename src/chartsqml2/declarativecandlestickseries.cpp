@@ -62,13 +62,13 @@ DeclarativeCandlestickSeries::DeclarativeCandlestickSeries(QQuickItem *parent)
     connect(m_axes, SIGNAL(axisYRightChanged(QAbstractAxis*)),
             this, SIGNAL(axisYRightChanged(QAbstractAxis*)));
 
-    connect(this, SIGNAL(hovered(bool, QCandlestickSet *)),
-            this, SLOT(onHovered(bool, QCandlestickSet *)));
-    connect(this, SIGNAL(clicked(QCandlestickSet *)), this, SLOT(onClicked(QCandlestickSet *)));
-    connect(this, SIGNAL(pressed(QCandlestickSet *)), this, SLOT(onPressed(QCandlestickSet *)));
-    connect(this, SIGNAL(released(QCandlestickSet *)), this, SLOT(onReleased(QCandlestickSet *)));
-    connect(this, SIGNAL(doubleClicked(QCandlestickSet *)),
-            this, SLOT(onDoubleClicked(QCandlestickSet *)));
+    connect(this, SIGNAL(hovered(bool,QCandlestickSet*)),
+            this, SLOT(onHovered(bool,QCandlestickSet*)));
+    connect(this, SIGNAL(clicked(QCandlestickSet*)), this, SLOT(onClicked(QCandlestickSet*)));
+    connect(this, SIGNAL(pressed(QCandlestickSet*)), this, SLOT(onPressed(QCandlestickSet*)));
+    connect(this, SIGNAL(released(QCandlestickSet*)), this, SLOT(onReleased(QCandlestickSet*)));
+    connect(this, SIGNAL(doubleClicked(QCandlestickSet*)),
+            this, SLOT(onDoubleClicked(QCandlestickSet*)));
 
     connect(this, SIGNAL(brushChanged()), this, SLOT(handleBrushChanged()));
 }
@@ -159,7 +159,8 @@ void DeclarativeCandlestickSeries::classBegin()
 
 void DeclarativeCandlestickSeries::componentComplete()
 {
-    foreach (QObject *child, children()) {
+    const auto childlist = children();
+    for (QObject *child : childlist) {
         if (qobject_cast<DeclarativeCandlestickSet *>(child)) {
             QCandlestickSeries::append(qobject_cast<DeclarativeCandlestickSet *>(child));
         } else if (qobject_cast<QHCandlestickModelMapper *>(child)) {

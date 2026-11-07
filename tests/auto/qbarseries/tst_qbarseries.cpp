@@ -93,7 +93,7 @@ void tst_QBarSeries::init()
 
 void tst_QBarSeries::cleanup()
 {
-    foreach (QBarSet* s, m_testSets) {
+    for (auto s : std::as_const(m_testSets)) {
         m_barseries_with_sets->remove(s);
     }
     m_testSets.clear();
@@ -641,9 +641,9 @@ void tst_QBarSeries::mousehovered()
     series->append(set2);
     QList<QBarSet*> barSets = series->barSets();
 
-    QSignalSpy seriesIndexSpy(series, SIGNAL(hovered(bool, int, QBarSet*)));
-    QSignalSpy setIndexSpy1(set1, SIGNAL(hovered(bool, int)));
-    QSignalSpy setIndexSpy2(set2, SIGNAL(hovered(bool, int)));
+    QSignalSpy seriesIndexSpy(series, SIGNAL(hovered(bool,int,QBarSet*)));
+    QSignalSpy setIndexSpy1(set1, SIGNAL(hovered(bool,int)));
+    QSignalSpy setIndexSpy2(set2, SIGNAL(hovered(bool,int)));
 
     QChartView view(new QChart());
     view.resize(400,300);

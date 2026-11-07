@@ -18,7 +18,8 @@
     each point, two values are specified that determine its position on the
     horizontal axis and the vertical axis.
 
-    \image examples_scatterchart.png
+    \image examples_scatterchart.png {Scatter chart plotting three series as
+           circle, square, and star markers scattered across the plot}
 
     The following code snippet illustrates how to create a basic scatter chart:
     \code
@@ -45,7 +46,8 @@
     each point, two values are specified that determine its position on the
     horizontal axis and the vertical axis.
 
-    \image examples_qmlchart5.png
+    \image examples_qmlchart5.png {Scatter chart plotting two series of
+           points as blue and green markers}
 
     The following QML code shows how to create a chart with two simple scatter
     series:
@@ -84,14 +86,6 @@
 /*!
     \qmlproperty brush ScatterSeries::brush
     The brush used to draw the scatter series markers.
-*/
-
-/*!
-    \property QScatterSeries::color
-    \brief The color used to fill the series markers.
-
-    This is a convenience property for modifying the color of the brush.
-    \sa QScatterSeries::brush()
 */
 
 /*!
@@ -357,6 +351,7 @@ void QScatterSeriesPrivate::initializeAnimations(QChart::AnimationOptions option
     else
         item->setAnimation(0);
 
+    // AXIVION Next Line Qt-SkippedBaseMethod: Intentionally skipping QXYSeriesPrivate
     QAbstractSeriesPrivate::initializeAnimations(options, duration, curve);
 }
 
