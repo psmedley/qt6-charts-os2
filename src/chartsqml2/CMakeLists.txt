@@ -39,7 +39,6 @@ qt_internal_add_qml_module(ChartsQml
         Qt::Gui
         Qt::Qml
         Qt::Quick
-    OS2_SHORT_NAME Qt6ChtQm
 )
 
 qt_internal_extend_target(ChartsQml CONDITION QT_FEATURE_opengl
